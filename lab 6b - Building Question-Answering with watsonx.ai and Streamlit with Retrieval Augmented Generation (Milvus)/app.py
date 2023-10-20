@@ -67,23 +67,16 @@ with st.sidebar:
             key="placeholder",
         )
 
-def milvussearch(query):
+def milvus_search(query):
     model_name = 'all-MiniLM-L6-v2'
-
     collection_name = "travel_leave"
     connections.connect("default", host="128.168.140.66", port="19530")
-    # print(fmt.format("Start loading"))
     collection = Collection(collection_name)
     collection.load()
-
-    print(collection)
     search_params = {
         "metric_type": "L2",
         "params": {"ef": 10},
     }
-
-    #query = "How do I take sick leave?"
-
     model = SentenceTransformer(model_name)
     vectors_to_search = model.encode([query]).tolist()
 
@@ -106,7 +99,7 @@ if user_question := st.text_input(
 ):
     #docs = read_pdf(uploaded_files)
     #db = read_push_embeddings()
-    docs = milvussearch(user_question)
+    docs = milvus_search(user_question)
     params = {
         GenParams.DECODING_METHOD: "greedy",
         GenParams.MIN_NEW_TOKENS: 30,
@@ -116,7 +109,7 @@ if user_question := st.text_input(
         # GenParams.TOP_P: 1,
         GenParams.REPETITION_PENALTY: 1
     }
-    print(ModelTypes.FLAN_UL2.value)
+
     model_llm = LangChainInterface(model=ModelTypes.FLAN_UL2.value, credentials=creds, params=params, project_id=project_id)
     chain = load_qa_chain(model_llm, chain_type="stuff")
 
