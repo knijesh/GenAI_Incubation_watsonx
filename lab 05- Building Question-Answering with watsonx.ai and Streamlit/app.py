@@ -32,7 +32,7 @@ else:
 # Define generation parameters 
 params = {
     GenParams.DECODING_METHOD: "sample",
-    GenParams.MIN_NEW_TOKENS: 30,
+    GenParams.MIN_NEW_TOKENS: 1,
     GenParams.MAX_NEW_TOKENS: 300,
     GenParams.TEMPERATURE: 0.2,
     # GenParams.TOP_K: 100,
@@ -40,8 +40,13 @@ params = {
     GenParams.REPETITION_PENALTY: 1
 }
 
+models = {
+    "granite_chat":"ibm/granite-13b-chat-v1",
+    "flanul": "google/flan-ul2",
+    "llama2": "meta-llama/llama-2-70b-chat"
+}
 # define LangChainInterface model
-llm = LangChainInterface(model='google/flan-ul2', credentials=creds, params=params, project_id=project_id)
+llm = LangChainInterface(model=models["granite_chat"], credentials=creds, params=params, project_id=project_id)
 
 # Title for the app
 st.title('🤖 Our First Q&A Front End')
