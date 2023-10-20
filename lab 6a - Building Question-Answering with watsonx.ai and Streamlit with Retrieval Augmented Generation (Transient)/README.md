@@ -7,6 +7,3 @@ So I'm guessing you've been hearing a bit about watsonx. Well...now you can buil
 3. Copy your .env file into this lab's base folder
 4. Run the app by running the command `streamlit run app.py`
 
-![simple-streamlit-demo.png](simple-streamlit-demo.png)
-
-👨🏾‍💻 Author: Nick Renotte
