@@ -3,4 +3,5 @@
 LangChain is a package to build applications using LLMs.
 The core idea of the library is that we can “chain” together different components to create more advanced use cases around LLMs.
 
-![image](https://github.com/knijesh/GenAI_Incubation_watsonx/assets/8414621/0c61dcaa-68b2-43f1-a0c8-5617084e931e)
+
+<img width="406" alt="Screenshot 2023-10-23 at 6 06 28 AM" src="https://github.com/knijesh/GenAI_Incubation_watsonx/assets/8414621/1dbeb285-bc3b-417a-ad79-1c38911917e4">
