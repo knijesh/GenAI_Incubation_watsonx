@@ -1,4 +1,4 @@
 # GenAI_Incubation_watsonx
 
-##Agenda :
-<img width="1755" alt="image" src="https://github.com/knijesh/GenAI_Incubation_watsonx/assets/8414621/1d165e7d-343a-4f3d-9777-2a0092e3ec4e">
+
+<img width="1251" alt="Screenshot 2023-10-23 at 5 46 47 AM" src="https://github.com/knijesh/GenAI_Incubation_watsonx/assets/8414621/b1700479-719f-4199-b978-b587a00b39b1">
