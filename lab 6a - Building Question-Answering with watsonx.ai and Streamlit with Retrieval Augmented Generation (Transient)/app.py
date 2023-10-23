@@ -5,9 +5,8 @@ import tempfile
 
 import streamlit as st
 from dotenv import load_dotenv
-from genai.schemas import GenerateParams
-from ibm_watson_machine_learning.metanames import \
-    GenTextParamsMetaNames as GenParams
+from ibm_watson_machine_learning.metanames import GenTextParamsMetaNames as GenParams
+from ibm_watson_machine_learning.foundation_models.utils.enums import ModelTypes
 from langchain.callbacks import StdOutCallbackHandler
 from langchain.chains.question_answering import load_qa_chain
 from langchain.document_loaders import PyPDFLoader
@@ -111,7 +110,7 @@ if user_question := st.text_input(
     db = read_push_embeddings()
     docs = db.similarity_search(user_question)
     params = {
-        GenParams.DECODING_METHOD: "sample",
+        GenParams.DECODING_METHOD: "greedy",
         GenParams.MIN_NEW_TOKENS: 30,
         GenParams.MAX_NEW_TOKENS: 300,
         GenParams.TEMPERATURE: 0.0,
@@ -119,7 +118,7 @@ if user_question := st.text_input(
         # GenParams.TOP_P: 1,
         GenParams.REPETITION_PENALTY: 1
     }
-    model_llm = LangChainInterface(model='ibm/granite-13b-instruct-v1', credentials=creds, params=params, project_id=project_id)
+    model_llm = LangChainInterface(model=ModelTypes.GRANITE_13B_INSTRUCT.value, credentials=creds, params=params, project_id=project_id)
     chain = load_qa_chain(model_llm, chain_type="stuff")
 
     response = chain.run(input_documents=docs, question=user_question)

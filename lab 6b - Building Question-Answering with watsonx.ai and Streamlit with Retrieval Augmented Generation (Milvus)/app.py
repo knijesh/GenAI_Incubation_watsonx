@@ -1,20 +1,11 @@
 import logging
 import os
-import pickle
-import tempfile
-
 import streamlit as st
 from dotenv import load_dotenv
-#from genai.schemas import GenerateParams
-from ibm_watson_machine_learning.metanames import \
-    GenTextParamsMetaNames as GenParams
+from ibm_watson_machine_learning.metanames import GenTextParamsMetaNames as GenParams
+from ibm_watson_machine_learning.foundation_models.utils.enums import ModelTypes
 from langchain.callbacks import StdOutCallbackHandler
 from langchain.chains.question_answering import load_qa_chain
-from langchain.document_loaders import PyPDFLoader
-from langchain.embeddings import (HuggingFaceHubEmbeddings,
-                                  HuggingFaceInstructEmbeddings)
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.vectorstores import FAISS, Chroma
 from pymilvus import (
     connections,
     Collection
@@ -22,7 +13,6 @@ from pymilvus import (
 from sentence_transformers import SentenceTransformer
 from langchain.docstore.document import Document
 from PIL import Image
-
 from langChainInterface import LangChainInterface
 
 # Most GENAI logs are at Debug level.
@@ -54,8 +44,6 @@ else:
         "apikey": api_key 
     }
 
-GEN_API_KEY = os.getenv("GENAI_KEY", None)
-
 # Sidebar contents
 with st.sidebar:
     st.title("RAG App")
@@ -79,37 +67,16 @@ with st.sidebar:
             key="placeholder",
         )
 
-@st.cache_data
-def read_push_embeddings():
-    embeddings = HuggingFaceHubEmbeddings(repo_id="sentence-transformers/all-MiniLM-L6-v2")
-    if os.path.exists("db.pickle"):
-        with open("db.pickle",'rb') as file_name:
-            db = pickle.load(file_name)
-    else:     
-        db = FAISS.from_documents(docs, embeddings)
-        with open('db.pickle','wb') as file_name  :
-             pickle.dump(db,file_name)
-        st.write("\n")
-    return db
-
-@st.cache_data
-def milvussearch(query):
+def milvus_search(query):
     model_name = 'all-MiniLM-L6-v2'
-
     collection_name = "travel_leave"
     connections.connect("default", host="128.168.140.66", port="19530")
-    # print(fmt.format("Start loading"))
     collection = Collection(collection_name)
     collection.load()
-
-    print(collection)
     search_params = {
         "metric_type": "L2",
         "params": {"ef": 10},
     }
-
-    #query = "How do I take sick leave?"
-
     model = SentenceTransformer(model_name)
     vectors_to_search = model.encode([query]).tolist()
 
@@ -128,13 +95,11 @@ def milvussearch(query):
 
 # show user input
 if user_question := st.text_input(
-    "Ask a question about your Document:"
+    "Ask a question about your Policy Document:"
 ):
     #docs = read_pdf(uploaded_files)
     #db = read_push_embeddings()
-    docs = milvussearch(user_question)
-    print ("PRINTING DOCS")
-    print (docs)
+    docs = milvus_search(user_question)
     params = {
         GenParams.DECODING_METHOD: "greedy",
         GenParams.MIN_NEW_TOKENS: 30,
@@ -144,7 +109,8 @@ if user_question := st.text_input(
         # GenParams.TOP_P: 1,
         GenParams.REPETITION_PENALTY: 1
     }
-    model_llm = LangChainInterface(model='ibm/granite-13b-instruct-v1', credentials=creds, params=params, project_id=project_id)
+
+    model_llm = LangChainInterface(model=ModelTypes.FLAN_UL2.value, credentials=creds, params=params, project_id=project_id)
     chain = load_qa_chain(model_llm, chain_type="stuff")
 
     response = chain.run(input_documents=docs, question=user_question)
