@@ -75,7 +75,7 @@ with st.sidebar:
 uploaded_files = st.file_uploader("Choose a PDF file", accept_multiple_files=True)
 
 @st.cache_data
-def read_pdf(uploaded_files,chunk_size =1200,chunk_overlap=200):
+def read_pdf(uploaded_files,chunk_size =250,chunk_overlap=20):
     for uploaded_file in uploaded_files:
       bytes_data = uploaded_file.read()
       with tempfile.NamedTemporaryFile(mode='wb', delete=False) as temp_file:
@@ -118,7 +118,7 @@ if user_question := st.text_input(
         # GenParams.TOP_P: 1,
         GenParams.REPETITION_PENALTY: 1
     }
-    model_llm = LangChainInterface(model=ModelTypes.GRANITE_13B_INSTRUCT.value, credentials=creds, params=params, project_id=project_id)
+    model_llm = LangChainInterface(model=ModelTypes.LLAMA_2_70B_CHAT.value, credentials=creds, params=params, project_id=project_id)
     chain = load_qa_chain(model_llm, chain_type="stuff")
 
     response = chain.run(input_documents=docs, question=user_question)
